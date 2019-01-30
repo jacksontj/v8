@@ -107,8 +107,8 @@ KindMask v8_Value_KindsFromLocal(v8::Local<v8::Value> value) {
   return kinds;
 }
 
-std::string str(v8::Local<v8::Value> value) {
-  v8::String::Utf8Value s(nullptr /* FIXME */, value);
+std::string str(v8::Isolate* isolate, v8::Local<v8::Value> value) {
+  v8::String::Utf8Value s(isolate, value);
   if (s.length() == 0) {
     return "";
   }
@@ -119,13 +119,13 @@ std::string report_exception(v8::Isolate* isolate, v8::Local<v8::Context> ctx, v
   std::stringstream ss;
   ss << "Uncaught exception: ";
 
-  std::string exceptionStr = str(try_catch.Exception());
+  std::string exceptionStr = str(isolate, try_catch.Exception());
   ss << exceptionStr; // TODO(aroman) JSON-ify objects?
 
   if (!try_catch.Message().IsEmpty()) {
     if (!try_catch.Message()->GetScriptResourceName()->IsUndefined()) {
       ss << std::endl
-         << "at " << str(try_catch.Message()->GetScriptResourceName());
+         << "at " << str(isolate, try_catch.Message()->GetScriptResourceName());
 
       v8::Maybe<int> line_no = try_catch.Message()->GetLineNumber(ctx);
       v8::Maybe<int> start = try_catch.Message()->GetStartColumn(ctx);
@@ -140,7 +140,7 @@ std::string report_exception(v8::Isolate* isolate, v8::Local<v8::Context> ctx, v
       }
       if (!sourceLine.IsEmpty()) {
         ss << std::endl
-           << "  " << str(sourceLine.ToLocalChecked());
+           << "  " << str(isolate, sourceLine.ToLocalChecked());
       }
       if (start.IsJust() && end.IsJust()) {
         ss << std::endl
@@ -277,7 +277,7 @@ void go_callback(const v8::FunctionCallbackInfo<v8::Value>& args) {
   v8::Isolate* iso = args.GetIsolate();
   v8::HandleScope scope(iso);
 
-  std::string id = str(args.Data());
+  std::string id = str(iso, args.Data());
 
   std::string src_file, src_func;
   int line_number = 0, column = 0;
