@@ -40,8 +40,8 @@ String DupString(const v8::String::Utf8Value& src) {
   memcpy(data, *src, src.length());
   return (String){data, src.length()};
 }
-String DupString(const v8::Local<v8::Value>& val) {
-  return DupString(v8::String::Utf8Value(nullptr /* FIXME */, val));
+String DupString(v8::Isolate *isolate, const v8::Local<v8::Value>& val) {
+	return DupString(v8::String::Utf8Value(isolate, val));
 }
 String DupString(const char* msg) {
   const char* data = strdup(msg);
@@ -571,7 +571,7 @@ String v8_Value_String(ContextPtr ctxptr, PersistentValuePtr valueptr) {
   VALUE_SCOPE(ctxptr);
 
   v8::Local<v8::Value> value = static_cast<Value*>(valueptr)->Get(isolate);
-  return String{} /* FIXME DupString(value->ToString()) */;
+  return DupString(isolate, value->ToString(ctx).ToLocalChecked());
 }
 
 double v8_Value_Float64(ContextPtr ctxptr, PersistentValuePtr valueptr) {
