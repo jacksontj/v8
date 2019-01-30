@@ -26,6 +26,7 @@ extern "C" ValueTuple go_callback_handler(
 
 // We only need one, it's stateless.
 auto allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+auto platform = v8::platform::NewDefaultPlatform();
 
 typedef struct {
   v8::Persistent<v8::Context> ptr;
@@ -170,8 +171,7 @@ extern "C" {
 Version version = {V8_MAJOR_VERSION, V8_MINOR_VERSION, V8_BUILD_NUMBER, V8_PATCH_LEVEL};
 
 void v8_init() {
-  v8::Platform *platform = nullptr/* FIXME v8::platform::CreateDefaultPlatform()*/;
-  v8::V8::InitializePlatform(platform);
+  v8::V8::InitializePlatform(platform.get());
   v8::V8::Initialize();
   return;
 }
