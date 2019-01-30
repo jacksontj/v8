@@ -40,7 +40,7 @@ String DupString(const v8::String::Utf8Value& src) {
   return (String){data, src.length()};
 }
 String DupString(const v8::Local<v8::Value>& val) {
-  return DupString(v8::String::Utf8Value(val));
+  return DupString(v8::String::Utf8Value(nullptr /* FIXME */, val));
 }
 String DupString(const char* msg) {
   const char* data = strdup(msg);
@@ -108,7 +108,7 @@ KindMask v8_Value_KindsFromLocal(v8::Local<v8::Value> value) {
 }
 
 std::string str(v8::Local<v8::Value> value) {
-  v8::String::Utf8Value s(value);
+  v8::String::Utf8Value s(nullptr /* FIXME */, value);
   if (s.length() == 0) {
     return "";
   }
@@ -155,9 +155,11 @@ std::string report_exception(v8::Isolate* isolate, v8::Local<v8::Context> ctx, v
     }
   }
 
+/* FIXME
   if (!try_catch.StackTrace().IsEmpty()) {
     ss << std::endl << "Stack trace: " << str(try_catch.StackTrace());
   }
+*/
 
   return ss.str();
 }
@@ -168,15 +170,18 @@ extern "C" {
 Version version = {V8_MAJOR_VERSION, V8_MINOR_VERSION, V8_BUILD_NUMBER, V8_PATCH_LEVEL};
 
 void v8_init() {
-  v8::Platform *platform = v8::platform::CreateDefaultPlatform();
+  v8::Platform *platform = nullptr/* FIXME v8::platform::CreateDefaultPlatform()*/;
   v8::V8::InitializePlatform(platform);
   v8::V8::Initialize();
   return;
 }
 
 StartupData v8_CreateSnapshotDataBlob(const char* js) {
+  /* FIXME
   v8::StartupData data = v8::V8::CreateSnapshotDataBlob(js);
   return StartupData{data.data, data.raw_size};
+*/
+  return StartupData{nullptr, 0};
 }
 
 IsolatePtr v8_Isolate_New(StartupData startup_data) {
@@ -229,6 +234,7 @@ ValueTuple v8_Context_Run(ContextPtr ctxptr, const char* code, const char* filen
 
   ValueTuple res = { nullptr, 0, nullptr };
 
+/* FIXME
   v8::Local<v8::Script> script = v8::Script::Compile(
       v8::String::NewFromUtf8(isolate, code),
       v8::String::NewFromUtf8(isolate, filename));
@@ -246,6 +252,7 @@ ValueTuple v8_Context_Run(ContextPtr ctxptr, const char* code, const char* filen
     res.Value = static_cast<PersistentValuePtr>(new Value(isolate, result));
     res.Kinds = v8_Value_KindsFromLocal(result);
   }
+*/
 
 	return res;
 }
@@ -276,11 +283,13 @@ void go_callback(const v8::FunctionCallbackInfo<v8::Value>& args) {
   int line_number = 0, column = 0;
   v8::Local<v8::StackTrace> trace(v8::StackTrace::CurrentStackTrace(iso, 1));
   if (trace->GetFrameCount() == 1) {
+	  /* FIXME
     v8::Local<v8::StackFrame> frame(trace->GetFrame(0));
     src_file = str(frame->GetScriptName());
     src_func = str(frame->GetFunctionName());
     line_number = frame->GetLineNumber();
     column = frame->GetColumn();
+    */
   }
 
   int argc = args.Length();
@@ -337,7 +346,7 @@ PersistentValuePtr v8_Context_Create(ContextPtr ctxptr, ImmediateValue val) {
         break;
     }
     case tBOOL:        return new Value(isolate, v8::Boolean::New(isolate, val.Bool == 1)); break;
-    case tDATE:        return new Value(isolate, v8::Date::New(isolate, val.Float64)); break;
+    case tDATE:        return nullptr /* FIXME new Value(isolate, v8::Date::New(isolate, val.Float64))*/; break;
     case tFLOAT64:     return new Value(isolate, v8::Number::New(isolate, val.Float64)); break;
     // For now, this is converted to a double on entry.
     // TODO(aroman) Consider using BigInt, but only if the V8 version supports
@@ -562,7 +571,7 @@ String v8_Value_String(ContextPtr ctxptr, PersistentValuePtr valueptr) {
   VALUE_SCOPE(ctxptr);
 
   v8::Local<v8::Value> value = static_cast<Value*>(valueptr)->Get(isolate);
-  return DupString(value->ToString());
+  return String{} /* FIXME DupString(value->ToString()) */;
 }
 
 double v8_Value_Float64(ContextPtr ctxptr, PersistentValuePtr valueptr) {
