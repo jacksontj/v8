@@ -116,7 +116,7 @@ std::string str(v8::Isolate* isolate, v8::Local<v8::Value> value) {
   return *s;
 }
 
-std::string report_exception(v8::Isolate* isolate, v8::Local<v8::Context> ctx, v8::TryCatch& try_catch) {
+std::string report_exception(v8::Isolate* isolate, v8::Local<v8::Context>& ctx, v8::TryCatch& try_catch) {
   std::stringstream ss;
   ss << "Uncaught exception: ";
 
@@ -221,12 +221,8 @@ void v8_Isolate_Release(IsolatePtr isolate_ptr) {
 }
 
 ValueTuple v8_Context_Run(ContextPtr ctxptr, const char* code, const char* filename) {
-  Context* ctx = static_cast<Context*>(ctxptr);
-  v8::Isolate* isolate = ctx->isolate;
-  v8::Locker locker(isolate);
-  v8::Isolate::Scope isolate_scope(isolate);
-  v8::HandleScope handle_scope(isolate);
-  v8::Context::Scope context_scope(ctx->ptr.Get(isolate));
+  VALUE_SCOPE(ctxptr)
+
   v8::TryCatch try_catch(isolate);
   try_catch.SetVerbose(false);
 
@@ -234,25 +230,23 @@ ValueTuple v8_Context_Run(ContextPtr ctxptr, const char* code, const char* filen
 
   ValueTuple res = { nullptr, 0, nullptr };
 
-/* FIXME
-  v8::Local<v8::Script> script = v8::Script::Compile(
-      v8::String::NewFromUtf8(isolate, code),
-      v8::String::NewFromUtf8(isolate, filename));
+  v8::ScriptOrigin origin(v8::String::NewFromUtf8(isolate, filename));
+
+  auto script = v8::Script::Compile(ctx, v8::String::NewFromUtf8(isolate, code), &origin);
 
   if (script.IsEmpty()) {
-    res.error_msg = DupString(report_exception(isolate, ctx->ptr.Get(isolate), try_catch));
+    res.error_msg = DupString(report_exception(isolate, ctx, try_catch));
     return res;
   }
 
-  v8::Local<v8::Value> result = script->Run();
+  auto result = script.ToLocalChecked()->Run(ctx);
 
   if (result.IsEmpty()) {
-    res.error_msg = DupString(report_exception(isolate, ctx->ptr.Get(isolate), try_catch));
+    res.error_msg = DupString(report_exception(isolate, ctx, try_catch));
   } else {
-    res.Value = static_cast<PersistentValuePtr>(new Value(isolate, result));
-    res.Kinds = v8_Value_KindsFromLocal(result);
+    res.Value = static_cast<PersistentValuePtr>(new Value(isolate, result.ToLocalChecked()));
+    res.Kinds = v8_Value_KindsFromLocal(result.ToLocalChecked());
   }
-*/
 
 	return res;
 }
