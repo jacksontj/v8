@@ -277,13 +277,11 @@ void go_callback(const v8::FunctionCallbackInfo<v8::Value>& args) {
   int line_number = 0, column = 0;
   v8::Local<v8::StackTrace> trace(v8::StackTrace::CurrentStackTrace(iso, 1));
   if (trace->GetFrameCount() == 1) {
-	  /* FIXME
-    v8::Local<v8::StackFrame> frame(trace->GetFrame(0));
-    src_file = str(frame->GetScriptName());
-    src_func = str(frame->GetFunctionName());
+    v8::Local<v8::StackFrame> frame(trace->GetFrame(iso, 0));
+    src_file = str(iso, frame->GetScriptName());
+    src_func = str(iso, frame->GetFunctionName());
     line_number = frame->GetLineNumber();
     column = frame->GetColumn();
-    */
   }
 
   int argc = args.Length();
