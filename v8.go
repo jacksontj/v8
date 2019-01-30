@@ -14,7 +14,7 @@ package v8
 // #include <stdlib.h>
 // #include <string.h>
 // #include "v8_c_bridge.h"
-// #cgo CXXFLAGS: -I${SRCDIR} -I${SRCDIR}/include -I${SRCDIR}/vendor/v8/include/ -fno-rtti -fpic -std=c++11
+// #cgo CXXFLAGS: -I${SRCDIR} -I${SRCDIR}/include -I${SRCDIR}/vendor/v8/include/ -fno-rtti -fpic -std=c++17
 // #cgo LDFLAGS: -pthread -L${SRCDIR}/vendor/v8/out.gn/libv8/obj/ -lv8_monolith
 import "C"
 

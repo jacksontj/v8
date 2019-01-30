@@ -156,11 +156,9 @@ std::string report_exception(v8::Isolate* isolate, v8::Local<v8::Context>& ctx, 
     }
   }
 
-/* FIXME
-  if (!try_catch.StackTrace().IsEmpty()) {
-    ss << std::endl << "Stack trace: " << str(try_catch.StackTrace());
+  if (auto stack_trace = try_catch.StackTrace(ctx); !stack_trace.IsEmpty()) {
+    ss << std::endl << "Stack trace: " << str(isolate, stack_trace.ToLocalChecked());
   }
-*/
 
   return ss.str();
 }
