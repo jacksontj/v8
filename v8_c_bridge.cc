@@ -346,7 +346,7 @@ PersistentValuePtr v8_Context_Create(ContextPtr ctxptr, ImmediateValue val) {
         break;
     }
     case tBOOL:        return new Value(isolate, v8::Boolean::New(isolate, val.Bool == 1)); break;
-    case tDATE:        return nullptr /* FIXME new Value(isolate, v8::Date::New(isolate, val.Float64))*/; break;
+    case tDATE:        return new Value(isolate, v8::Date::New(ctx, val.Float64).ToLocalChecked()); break;
     case tFLOAT64:     return new Value(isolate, v8::Number::New(isolate, val.Float64)); break;
     // For now, this is converted to a double on entry.
     // TODO(aroman) Consider using BigInt, but only if the V8 version supports
