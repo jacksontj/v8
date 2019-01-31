@@ -165,6 +165,7 @@ func ExampleContext_Create_callbacks() {
 	// ids.next() = 1
 }
 
+/* FIXME
 func ExampleSnapshot() {
 	snapshot := v8.CreateSnapshot(`
         // Concantenate all the scripts you want at startup, e.g. lodash, etc.
@@ -201,3 +202,4 @@ func ExampleSnapshot() {
 	// Context 2:
 	// myGlobalState.foo: 3
 }
+*/

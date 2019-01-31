@@ -97,6 +97,7 @@ func (s PromiseState) String() string {
 // Ensure that v8 is initialized exactly once on first use.
 var v8_init_once sync.Once
 
+/* FIXME
 // Snapshot contains the stored VM state that can be used to quickly recreate a
 // new VM at that particular state.
 type Snapshot struct{ data C.StartupData }
@@ -142,6 +143,7 @@ func CreateSnapshot(js string) *Snapshot {
 	defer C.free(unsafe.Pointer(js_ptr))
 	return newSnapshot(C.v8_CreateSnapshotDataBlob(js_ptr))
 }
+*/
 
 // Isolate represents a single-threaded V8 engine instance.  It can run multiple
 // independent Contexts and V8 values can be freely shared between the Contexts,
@@ -156,6 +158,7 @@ func NewIsolate() *Isolate {
 	return iso
 }
 
+/* FIXME
 // NewIsolateWithSnapshot creates a new V8 Isolate using the supplied Snapshot
 // to initialize all Contexts created from this Isolate.
 func NewIsolateWithSnapshot(s *Snapshot) *Isolate {
@@ -164,6 +167,7 @@ func NewIsolateWithSnapshot(s *Snapshot) *Isolate {
 	runtime.SetFinalizer(iso, (*Isolate).release)
 	return iso
 }
+*/
 
 // NewContext creates a new, clean V8 Context within this Isolate.
 func (i *Isolate) NewContext() *Context {

@@ -174,13 +174,12 @@ void v8_init() {
   return;
 }
 
+/* FIXME
 StartupData v8_CreateSnapshotDataBlob(const char* js) {
-  /* FIXME
   v8::StartupData data = v8::V8::CreateSnapshotDataBlob(js);
   return StartupData{data.data, data.raw_size};
-*/
-  return StartupData{nullptr, 0};
 }
+*/
 
 IsolatePtr v8_Isolate_New(StartupData startup_data) {
   v8::Isolate::CreateParams create_params;
