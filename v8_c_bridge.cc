@@ -181,15 +181,9 @@ StartupData v8_CreateSnapshotDataBlob(const char* js) {
 }
 */
 
-IsolatePtr v8_Isolate_New(StartupData startup_data) {
+IsolatePtr v8_Isolate_New() {
   v8::Isolate::CreateParams create_params;
   create_params.array_buffer_allocator = allocator;
-  if (startup_data.len > 0 && startup_data.ptr != nullptr) {
-    v8::StartupData* data = new v8::StartupData;
-    data->data = startup_data.ptr;
-    data->raw_size = startup_data.len;
-    create_params.snapshot_blob = data;
-  }
   return static_cast<IsolatePtr>(v8::Isolate::New(create_params));
 }
 ContextPtr v8_Isolate_NewContext(IsolatePtr isolate_ptr) {

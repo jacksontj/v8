@@ -153,7 +153,7 @@ type Isolate struct{ ptr C.IsolatePtr }
 // NewIsolate creates a new V8 Isolate.
 func NewIsolate() *Isolate {
 	v8_init_once.Do(func() { C.v8_init() })
-	iso := &Isolate{C.v8_Isolate_New(C.StartupData{ptr: nil, len: 0})}
+	iso := &Isolate{C.v8_Isolate_New()}
 	runtime.SetFinalizer(iso, (*Isolate).release)
 	return iso
 }
