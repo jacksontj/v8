@@ -20,7 +20,6 @@ gn gen out.gn/lib --args='
     use_custom_libcxx = false
     use_custom_libcxx_for_host = false
 
-    icu_use_data_file = false
     is_desktop_linux = false
     v8_enable_i18n_support = false
     v8_use_external_startup_data = false
