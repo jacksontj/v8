@@ -25,4 +25,4 @@ gn gen out.gn/lib --args='
     v8_use_external_startup_data = false
     v8_enable_gdbjit = false
     v8_monolithic = true'
-ninja -C out.gn/lib v8_libbase v8_libplatform v8_base v8_nosnapshot v8_libsampler v8_init v8_initializers
+ninja -C out.gn/lib v8_libbase v8_libplatform v8_base v8_nosnapshot v8_libsampler v8_init v8_initializers v8_monolith
